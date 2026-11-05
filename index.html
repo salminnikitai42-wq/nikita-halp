@@ -6,203 +6,263 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NIKITA HAL</title>
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: #0b0e13;
-  color: #e8edf5;
-  font-family: Consolas, monospace;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.app {
-  width: min(92%, 520px);
-  padding: 28px;
-  background: #111720;
-  border: 1px solid #263344;
-  border-radius: 18px;
-  box-shadow: 0 20px 80px #0008;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #293342;
-  padding-bottom: 18px;
-}
-
-.status {
-  color: #65d69a;
-  font-size: 12px;
-}
-
-.version {
-  color: #687587;
-  font-size: 11px;
-}
-
-.main {
-  text-align: center;
-  padding: 55px 0 35px;
-}
-
-.logo {
-  font-size: 54px;
-  color: #8bb5ff;
-  letter-spacing: 8px;
-  text-shadow: 0 0 30px #467dcc55;
-}
-
-.subtitle {
-  color: #8290a3;
-  font-size: 11px;
-  letter-spacing: 3px;
-  margin-top: 12px;
-}
-
-.mic {
-  margin-top: 35px;
-  width: 78px;
-  height: 78px;
-  border-radius: 50%;
-  border: 1px solid #42618c;
-  background: #1a2b43;
-  color: #a9c9ff;
-  font-size: 30px;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.mic:hover {
-  background: #263f60;
-  box-shadow: 0 0 30px #568bd955;
-}
-
-.mic:disabled {
-  opacity: .5;
-  cursor: wait;
-}
-
-.hint {
-  color: #718096;
-  font-size: 11px;
-  margin-top: 18px;
-}
-
-.panel {
-  background: #0b1018;
-  border: 1px solid #263344;
-  border-radius: 10px;
-  padding: 16px;
-}
-
-.panel-title {
-  color: #8290a3;
-  font-size: 11px;
-  margin-bottom: 12px;
-}
-
-#log {
-  color: #65d69a;
-  font-size: 12px;
-  min-height: 42px;
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-
-.footer {
-  color: #526174;
-  text-align: center;
-  font-size: 10px;
-  margin-top: 22px;
-}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#0b0e13;color:#e8edf5;font-family:Consolas,monospace;display:flex;justify-content:center;align-items:center;padding:22px}
+.app{width:min(100%,560px);padding:26px;background:#111720;border:1px solid #263344;border-radius:18px;box-shadow:0 20px 80px #0008}
+.header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #293342;padding-bottom:18px;gap:10px}
+.status{color:#65d69a;font-size:12px}
+.version{color:#687587;font-size:11px}
+.main{text-align:center;padding:34px 0 25px}
+.logo{font-size:54px;color:#8bb5ff;letter-spacing:8px;text-shadow:0 0 30px #467dcc55}
+.subtitle{color:#8290a3;font-size:11px;letter-spacing:3px;margin-top:10px}
+.mic{margin-top:24px;width:76px;height:76px;border-radius:50%;border:1px solid #42618c;background:#1a2b43;color:#a9c9ff;font-size:30px;cursor:pointer;transition:.2s}
+.mic:hover,.service:hover{background:#263f60;box-shadow:0 0 24px #568bd933;transform:translateY(-1px)}
+.mic.listening{background:#244c43;border-color:#65d69a;color:#9affc5;box-shadow:0 0 28px #65d69a44}
+.hint{color:#718096;font-size:11px;margin-top:14px;min-height:15px}
+.services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 18px}
+.service{background:#182230;border:1px solid #2b3b50;border-radius:12px;padding:15px 10px;color:#e8edf5;font:inherit;font-size:13px;cursor:pointer;transition:.2s}
+.service span{display:block;font-size:23px;margin-bottom:7px}
+.panel{background:#0b1018;border:1px solid #263344;border-radius:10px;padding:15px;margin-top:14px}
+.panel-title{color:#8290a3;font-size:11px;margin-bottom:10px}
+#log{color:#65d69a;font-size:12px;min-height:52px;max-height:145px;overflow:auto;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.command{display:flex;gap:8px;margin-top:14px}
+#commandInput{min-width:0;flex:1;background:#0b1018;border:1px solid #34445a;border-radius:9px;padding:13px;color:#e8edf5;font:13px Consolas,monospace;outline:none}
+#commandInput:focus{border-color:#739bd2}
+#send{border:1px solid #42618c;border-radius:9px;background:#1a2b43;color:#b8d2ff;padding:0 16px;cursor:pointer;font:inherit}
+.footer{color:#526174;text-align:center;font-size:10px;margin-top:18px}
+@media(max-width:420px){.app{padding:19px}.version{font-size:9px}.logo{font-size:48px}}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
     <div class="status">● SYSTEM ONLINE</div>
-    <div class="version">NIKITA HAL / v1.0</div>
+    <div class="version">NIKITA HAL / v1.1</div>
   </div>
 
   <div class="main">
     <div class="logo">HAL</div>
-    <div class="subtitle">ГОЛОСОВОЙ ИНТЕРФЕЙС</div>
+    <div class="subtitle">ГОЛОСОВОЙ И ТЕКСТОВЫЙ ИНТЕРФЕЙС</div>
     <button class="mic" id="mic">⌁</button>
-    <div class="hint" id="hint">НАЖМИ ДЛЯ НАЧАЛА</div>
+    <div class="hint" id="hint">НАЖМИ ДЛЯ ГОЛОСОВОЙ КОМАНДЫ</div>
+  </div>
+
+  <div class="services">
+    <button class="service" data-site="youtube"><span>▶</span>YouTube</button>
+    <button class="service" data-site="vk"><span>ᴠκ</span>VK</button>
+    <button class="service" data-site="music"><span>♫</span>Яндекс Музыка</button>
+    <button class="service" data-site="kinopoisk"><span>▣</span>Кинопоиск</button>
   </div>
 
   <div class="panel">
     <div class="panel-title">SYSTEM LOG</div>
     <div id="log">[SYSTEM] Интерфейс загружен.
-[HAL] Ожидаю подключения...</div>
+[HAL] Голосовой и текстовый режимы готовы.</div>
+    <form class="command" id="commandForm">
+      <input id="commandInput" type="text" autocomplete="off" placeholder="Напишите команду HAL...">
+      <button id="send" type="submit">➤</button>
+    </form>
   </div>
 
-  <div class="footer">PRIVATE LOCAL INTERFACE · NIKITA</div>
+  <div class="footer">NIKITA HAL · PERSONAL ASSISTANT</div>
 </div>
 
 <script>
 const mic = document.getElementById("mic");
 const hint = document.getElementById("hint");
 const log = document.getElementById("log");
+const input = document.getElementById("commandInput");
+const form = document.getElementById("commandForm");
 
-mic.addEventListener("click", async () => {
+const sites = {
+  youtube: {
+    url:"https://www.youtube.com/",
+    name:"YouTube",
+    words:["youtube","ютуб","ютюб"]
+  },
+  vk: {
+    url:"https://vk.com/",
+    name:"VK",
+    words:["вк","вконтакте","vk"]
+  },
+  music: {
+    url:"https://music.yandex.ru/",
+    name:"Яндекс Музыка",
+    words:["яндекс музыка","музыку","музыка"]
+  },
+  kinopoisk: {
+    url:"https://www.kinopoisk.ru/",
+    name:"Кинопоиск",
+    words:["кинопоиск","кино поиск"]
+  }
+};
+
+function addLog(line) {
+  log.textContent += "\n" + line;
+  log.scrollTop = log.scrollHeight;
+}
+
+function beep(freq=660,duration=90) {
+  try {
+    const AudioContext =
+      window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.frequency.value = freq;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.045,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,ctx.currentTime+duration/1000
+    );
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime+duration/1000);
+    osc.onended = () => ctx.close();
+  } catch(e) {}
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    addLog("[HAL] Голосовой синтез не поддерживается.");
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ru-RU";
+  utterance.rate = 1;
+  utterance.pitch = 0.92;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function openSite(key) {
+  const site = sites[key];
+  if (!site) return;
+
+  const tab = window.open(site.url,"_blank","noopener");
+
+  addLog("[HAL] Открываю " + site.name + ".");
+  beep(780,80);
+
+  if (!tab) {
+    addLog("[SYSTEM] Браузер мог заблокировать новую вкладку. Разрешите всплывающие окна для сайта HAL.");
+  }
+}
+
+function handleCommand(raw) {
+  const command = raw.trim().toLowerCase();
+  if (!command) return;
+
+  addLog("[YOU] " + raw.trim());
+
+  if (/(привет|здравствуй|добрый день|доброе утро|добрый вечер)/i.test(command)) {
+    const answer = "Привет. Я на связи. Чем займёмся?";
+    addLog("[HAL] " + answer);
+    speak(answer);
+    beep(600,100);
+    return;
+  }
+
+  if (/(помощь|что умеешь|список команд)/i.test(command)) {
+    const answer = "Пока я умею открывать YouTube, ВК, Яндекс Музыку и Кинопоиск. Также могу поздороваться.";
+    addLog("[HAL] " + answer);
+    speak(answer);
+    return;
+  }
+
+  for (const [key,site] of Object.entries(sites)) {
+    if (site.words.some(word => command.includes(word))) {
+      openSite(key);
+      speak("Открываю " + site.name);
+      return;
+    }
+  }
+
+  const answer = "Пока не знаю эту команду. Скажи помощь, чтобы узнать, что я умею.";
+  addLog("[HAL] " + answer);
+  speak(answer);
+}
+
+document.querySelectorAll(".service").forEach(button => {
+  button.addEventListener("click",() => {
+    openSite(button.dataset.site);
+  });
+});
+
+form.addEventListener("submit",event => {
+  event.preventDefault();
+  const value = input.value;
+  if (!value.trim()) return;
+
+  handleCommand(value);
+  input.value = "";
+});
+
+mic.addEventListener("click",async () => {
   const Recognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
   if (!Recognition) {
     hint.textContent = "РАСПОЗНАВАНИЕ НЕ ПОДДЕРЖИВАЕТСЯ";
+    addLog("[ERROR] Используй Chrome или Edge для голосового ввода.");
     return;
   }
 
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true
-    });
+    const stream =
+      await navigator.mediaDevices.getUserMedia({audio:true});
 
     stream.getTracks().forEach(track => track.stop());
 
     const recognition = new Recognition();
     recognition.lang = "ru-RU";
     recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
     mic.disabled = true;
+    mic.classList.add("listening");
     hint.textContent = "СЛУШАЮ...";
-    log.textContent = "[HAL] Микрофон доступен.\n[HAL] Слушаю команду...";
+    addLog("[HAL] Слушаю команду...");
+    beep(520,70);
 
     recognition.onresult = event => {
       const command = event.results[0][0].transcript;
-      log.textContent = "[YOU] " + command;
       hint.textContent = "КОМАНДА ПРИНЯТА";
+      handleCommand(command);
     };
 
     recognition.onerror = event => {
-      log.textContent = "[ERROR] " + event.error;
+      addLog("[ERROR] Распознавание: " + event.error);
       hint.textContent = "ОШИБКА РАСПОЗНАВАНИЯ";
     };
 
     recognition.onend = () => {
       mic.disabled = false;
+      mic.classList.remove("listening");
+
       if (hint.textContent === "СЛУШАЮ...") {
-        hint.textContent = "НАЖМИ ДЛЯ НАЧАЛА";
+        hint.textContent = "НАЖМИ ДЛЯ ГОЛОСОВОЙ КОМАНДЫ";
       }
     };
 
     recognition.start();
 
-  } catch (error) {
-    log.textContent = "[ERROR] " + error.name;
+  } catch(error) {
+    addLog("[ERROR] " + error.name + ": нет доступа к микрофону.");
     hint.textContent = "НЕТ ДОСТУПА К МИКРОФОНУ";
     mic.disabled = false;
+    mic.classList.remove("listening");
   }
 });
 </script>
 </body>
 </html>
-
