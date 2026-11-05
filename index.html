@@ -1,268 +1,384 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050805">
 <title>NIKITA HAL</title>
 <style>
+:root{--green:#39ff14;--dim:#78a875;--line:#17451b;--bg:#030603}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:#0b0e13;color:#e8edf5;font-family:Consolas,monospace;display:flex;justify-content:center;align-items:center;padding:22px}
-.app{width:min(100%,560px);padding:26px;background:#111720;border:1px solid #263344;border-radius:18px;box-shadow:0 20px 80px #0008}
-.header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #293342;padding-bottom:18px;gap:10px}
-.status{color:#65d69a;font-size:12px}
-.version{color:#687587;font-size:11px}
-.main{text-align:center;padding:34px 0 25px}
-.logo{font-size:54px;color:#8bb5ff;letter-spacing:8px;text-shadow:0 0 30px #467dcc55}
-.subtitle{color:#8290a3;font-size:11px;letter-spacing:3px;margin-top:10px}
-.mic{margin-top:24px;width:76px;height:76px;border-radius:50%;border:1px solid #42618c;background:#1a2b43;color:#a9c9ff;font-size:30px;cursor:pointer;transition:.2s}
-.mic:hover,.service:hover{background:#263f60;box-shadow:0 0 24px #568bd933;transform:translateY(-1px)}
-.mic.listening{background:#244c43;border-color:#65d69a;color:#9affc5;box-shadow:0 0 28px #65d69a44}
-.hint{color:#718096;font-size:11px;margin-top:14px;min-height:15px}
-.services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 18px}
-.service{background:#182230;border:1px solid #2b3b50;border-radius:12px;padding:15px 10px;color:#e8edf5;font:inherit;font-size:13px;cursor:pointer;transition:.2s}
-.service span{display:block;font-size:23px;margin-bottom:7px}
-.panel{background:#0b1018;border:1px solid #263344;border-radius:10px;padding:15px;margin-top:14px}
-.panel-title{color:#8290a3;font-size:11px;margin-bottom:10px}
-#log{color:#65d69a;font-size:12px;min-height:52px;max-height:145px;overflow:auto;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
-.command{display:flex;gap:8px;margin-top:14px}
-#commandInput{min-width:0;flex:1;background:#0b1018;border:1px solid #34445a;border-radius:9px;padding:13px;color:#e8edf5;font:13px Consolas,monospace;outline:none}
-#commandInput:focus{border-color:#739bd2}
-#send{border:1px solid #42618c;border-radius:9px;background:#1a2b43;color:#b8d2ff;padding:0 16px;cursor:pointer;font:inherit}
-.footer{color:#526174;text-align:center;font-size:10px;margin-top:18px}
-@media(max-width:420px){.app{padding:19px}.version{font-size:9px}.logo{font-size:48px}}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--green);font-family:"Courier New",monospace;padding:22px;text-shadow:0 0 5px #39ff1430}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,#00000022 4px);opacity:.45}
+.app{width:min(100%,1050px);margin:0 auto;border:1px solid var(--green);padding:clamp(14px,3vw,28px);background:#030803;box-shadow:0 0 24px #39ff1415,inset 0 0 25px #39ff1408}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:13px;color:var(--dim);font-size:12px}
+.top strong{color:var(--green);font-weight:normal}
+.hero{text-align:center;padding:30px 0 24px}
+.logo{font-size:clamp(48px,10vw,78px);letter-spacing:.18em;margin-left:.18em;font-weight:bold;text-shadow:0 0 8px var(--green),0 0 24px #39ff1470}
+.subtitle{font-size:12px;letter-spacing:.22em;color:var(--dim);margin-top:8px}
+.status{margin-top:18px;font-size:12px;color:var(--dim)}
+.status b{color:var(--green);font-weight:normal}
+.mic{margin-top:20px;width:68px;height:68px;border:1px solid var(--green);border-radius:0;background:#061006;color:var(--green);font:30px "Courier New";cursor:pointer;box-shadow:0 0 14px #39ff1420}
+.mic:hover,.mic.listening{background:#123012;box-shadow:0 0 22px #39ff1460}
+.mic.listening{animation:pulse 1s infinite}
+.mic:disabled{opacity:.55;cursor:wait}
+@keyframes pulse{50%{box-shadow:0 0 30px #39ff14a0}}
+.hint{min-height:18px;margin-top:10px;font-size:11px;color:var(--dim)}
+.command{display:flex;gap:8px;margin:8px 0 20px}
+input{min-width:0;flex:1;background:#020502;border:1px solid var(--line);padding:13px;color:var(--green);font:14px "Courier New";outline:none}
+input:focus{border-color:var(--green);box-shadow:0 0 10px #39ff1425}
+input::placeholder{color:#557653}
+button{font-family:inherit}
+.send,.category{background:#061006;border:1px solid var(--line);color:var(--green);padding:10px 14px;cursor:pointer}
+.send:hover,.category:hover,.category.active{border-color:var(--green);background:#102410}
+.section-title{font-size:12px;color:var(--dim);border-bottom:1px dashed var(--line);padding:9px 0;margin:18px 0 12px}
+.categories{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.category{font-size:11px;padding:8px 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
+.site{display:block;text-align:left;text-decoration:none;color:var(--green);border:1px solid var(--line);padding:12px;background:#050b05;min-height:62px;transition:.12s}
+.site:hover{border-color:var(--green);background:#0c1a0c;transform:translateY(-1px)}
+.site-name{font-size:13px}
+.site-cat{font-size:10px;color:var(--dim);margin-top:6px}
+.log{border:1px solid var(--line);background:#020502;padding:12px;min-height:90px;max-height:180px;overflow:auto;font-size:12px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--dim)}
+.log .bright{color:var(--green)}
+.footer{text-align:center;color:#456b43;font-size:10px;margin-top:22px;letter-spacing:.12em}
+@media(max-width:520px){body{padding:8px}.app{padding:13px}.top{font-size:10px}.command{gap:5px}.send{padding:0 12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <div class="status">● SYSTEM ONLINE</div>
-    <div class="version">NIKITA HAL / v1.1</div>
-  </div>
+<main class="app">
+<header class="top">
+<span><strong>● SYSTEM ONLINE</strong> / ЛОКАЛЬНЫЙ ИНТЕРФЕЙС</span>
+<span>N.HAL // VERSION 2.0</span>
+</header>
 
-  <div class="main">
-    <div class="logo">HAL</div>
-    <div class="subtitle">ГОЛОСОВОЙ И ТЕКСТОВЫЙ ИНТЕРФЕЙС</div>
-    <button class="mic" id="mic">⌁</button>
-    <div class="hint" id="hint">НАЖМИ ДЛЯ ГОЛОСОВОЙ КОМАНДЫ</div>
-  </div>
+<section class="hero">
+<div class="logo">N.HAL</div>
+<div class="subtitle">PERSONAL ACCESS TERMINAL</div>
+<div class="status">МИКРОФОН: <b id="micStatus">ОЖИДАНИЕ</b> · РЕЖИМ: <b>БЕЗ ОЗВУЧКИ</b></div>
+<button class="mic" id="mic" type="button" title="Начать голосовой ввод">⌁</button>
+<div class="hint" id="hint">НАЖМИ НА КНОПКУ И ПРОИЗНЕСИ КОМАНДУ</div>
+</section>
 
-  <div class="services">
-    <button class="service" data-site="youtube"><span>▶</span>YouTube</button>
-    <button class="service" data-site="vk"><span>ᴠκ</span>VK</button>
-    <button class="service" data-site="music"><span>♫</span>Яндекс Музыка</button>
-    <button class="service" data-site="kinopoisk"><span>▣</span>Кинопоиск</button>
-  </div>
+<div class="section-title">[ ВВОД КОМАНДЫ ]</div>
+<form class="command" id="commandForm">
+<input id="commandInput" autocomplete="off" placeholder="Например: открой YouTube">
+<button class="send" type="submit">ВЫПОЛНИТЬ</button>
+</form>
 
-  <div class="panel">
-    <div class="panel-title">SYSTEM LOG</div>
-    <div id="log">[SYSTEM] Интерфейс загружен.
-[HAL] Голосовой и текстовый режимы готовы.</div>
-    <form class="command" id="commandForm">
-      <input id="commandInput" type="text" autocomplete="off" placeholder="Напишите команду HAL...">
-      <button id="send" type="submit">➤</button>
-    </form>
-  </div>
+<div class="section-title">[ КАТАЛОГ СЕТИ ]</div>
+<nav class="categories" id="categories"></nav>
+<section class="grid" id="sites"></section>
 
-  <div class="footer">NIKITA HAL · PERSONAL ASSISTANT</div>
-</div>
+<div class="section-title">[ SYSTEM LOG ]</div>
+<div class="log" id="log" aria-live="polite"></div>
+<footer class="footer">NIKITA HAL · TEXT + VOICE INPUT · NO VOICE OUTPUT</footer>
+</main>
 
 <script>
-const mic = document.getElementById("mic");
-const hint = document.getElementById("hint");
-const log = document.getElementById("log");
-const input = document.getElementById("commandInput");
-const form = document.getElementById("commandForm");
+"use strict";
 
-const sites = {
-  youtube: {
-    url:"https://www.youtube.com/",
-    name:"YouTube",
-    words:["youtube","ютуб","ютюб"]
-  },
-  vk: {
-    url:"https://vk.com/",
-    name:"VK",
-    words:["вк","вконтакте","vk"]
-  },
-  music: {
-    url:"https://music.yandex.ru/",
-    name:"Яндекс Музыка",
-    words:["яндекс музыка","музыку","музыка"]
-  },
-  kinopoisk: {
-    url:"https://www.kinopoisk.ru/",
-    name:"Кинопоиск",
-    words:["кинопоиск","кино поиск"]
+const $ = id => document.getElementById(id);
+const mic = $("mic");
+const hint = $("hint");
+const micStatus = $("micStatus");
+const log = $("log");
+const input = $("commandInput");
+
+let recognition = null;
+let listening = false;
+
+const catalog = [
+["Видео","YouTube","https://www.youtube.com/"],
+["Видео","Twitch","https://www.twitch.tv/"],
+["Видео","Кинопоиск","https://www.kinopoisk.ru/"],
+["Видео","Netflix","https://www.netflix.com/"],
+["Видео","Rutube","https://rutube.ru/"],
+["Видео","VK Видео","https://vkvideo.ru/"],
+["Музыка","Яндекс Музыка","https://music.yandex.ru/"],
+["Музыка","SoundCloud","https://soundcloud.com/"],
+["Музыка","Spotify","https://open.spotify.com/"],
+["Музыка","Bandcamp","https://bandcamp.com/"],
+["Музыка","Apple Music","https://music.apple.com/"],
+["Музыка","Last.fm","https://www.last.fm/"],
+["Музыка","FL Studio","https://www.image-line.com/"],
+["Музыка","WhoSampled","https://www.whosampled.com/"],
+["Общение","VK","https://vk.com/"],
+["Общение","Telegram","https://web.telegram.org/"],
+["Общение","Discord","https://discord.com/app"],
+["Общение","Reddit","https://www.reddit.com/"],
+["Общение","Pinterest","https://www.pinterest.com/"],
+["Общение","Instagram","https://www.instagram.com/"],
+["Общение","TikTok","https://www.tiktok.com/"],
+["Общение","X","https://x.com/"],
+["Игры","Steam","https://store.steampowered.com/"],
+["Игры","Epic Games","https://store.epicgames.com/"],
+["Игры","GOG","https://www.gog.com/"],
+["Игры","Nexus Mods","https://www.nexusmods.com/"],
+["Игры","Mod DB","https://www.moddb.com/"],
+["Разработка","GitHub","https://github.com/"],
+["Разработка","CodePen","https://codepen.io/"],
+["Разработка","Stack Overflow","https://stackoverflow.com/"],
+["Разработка","W3Schools","https://www.w3schools.com/"],
+["Разработка","MDN","https://developer.mozilla.org/"],
+["Разработка","Replit","https://replit.com/"],
+["ИИ","ChatGPT","https://chatgpt.com/"],
+["ИИ","Gemini","https://gemini.google.com/"],
+["ИИ","Claude","https://claude.ai/"],
+["ИИ","Hugging Face","https://huggingface.co/"],
+["ИИ","Perplexity","https://www.perplexity.ai/"],
+["Покупки","Ozon","https://www.ozon.ru/"],
+["Покупки","Wildberries","https://www.wildberries.ru/"],
+["Покупки","Avito","https://www.avito.ru/"],
+["Покупки","AliExpress","https://aliexpress.com/"],
+["Покупки","Яндекс Маркет","https://market.yandex.ru/"],
+["Покупки","DNS","https://www.dns-shop.ru/"],
+["Полезное","Google","https://www.google.com/"],
+["Полезное","Яндекс","https://ya.ru/"],
+["Полезное","Google Translate","https://translate.google.com/"],
+["Полезное","Яндекс Карты","https://yandex.ru/maps/"],
+["Полезное","Google Maps","https://maps.google.com/"],
+["Полезное","Gmail","https://mail.google.com/"],
+["Полезное","Яндекс Почта","https://mail.yandex.ru/"],
+["Полезное","Google Drive","https://drive.google.com/"],
+["Полезное","Яндекс Диск","https://disk.yandex.ru/"],
+["Полезное","Wikipedia","https://ru.wikipedia.org/"],
+["Полезное","Speedtest","https://www.speedtest.net/"],
+["Полезное","Internet Archive","https://archive.org/"]
+];
+
+const categories = ["ВСЕ", ...new Set(catalog.map(item => item[0]))];
+let activeCategory = "ВСЕ";
+
+function addLog(message, bright=false) {
+  const line = document.createElement("div");
+  if (bright) line.className = "bright";
+  line.textContent = message;
+  log.appendChild(line);
+
+  while (log.children.length > 80) {
+    log.removeChild(log.firstChild);
   }
-};
 
-function addLog(line) {
-  log.textContent += "\n" + line;
   log.scrollTop = log.scrollHeight;
 }
 
-function beep(freq=660,duration=90) {
-  try {
-    const AudioContext =
-      window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
+function renderCategories() {
+  const host = $("categories");
+  host.replaceChildren();
 
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+  categories.forEach(category => {
+    const button = document.createElement("button");
+    button.className = "category" +
+      (category === activeCategory ? " active" : "");
 
-    osc.frequency.value = freq;
-    osc.type = "sine";
-    gain.gain.setValueAtTime(0.045,ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-      0.001,ctx.currentTime+duration/1000
-    );
+    button.textContent = category;
+    button.type = "button";
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime+duration/1000);
-    osc.onended = () => ctx.close();
-  } catch(e) {}
+    button.addEventListener("click", () => {
+      activeCategory = category;
+      renderCategories();
+      renderSites();
+    });
+
+    host.appendChild(button);
+  });
 }
 
-function speak(text) {
-  if (!("speechSynthesis" in window)) {
-    addLog("[HAL] Голосовой синтез не поддерживается.");
-    return;
-  }
+function renderSites(filter="") {
+  const host = $("sites");
+  host.replaceChildren();
 
-  window.speechSynthesis.cancel();
+  const query = filter.toLocaleLowerCase("ru");
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ru-RU";
-  utterance.rate = 1;
-  utterance.pitch = 0.92;
+  catalog.filter(([category,name]) =>
+    (activeCategory === "ВСЕ" || category === activeCategory) &&
+    (!query || (name+" "+category).toLocaleLowerCase("ru").includes(query))
+  ).forEach(([category,name,url]) => {
+    const link = document.createElement("a");
 
-  window.speechSynthesis.speak(utterance);
+    link.className = "site";
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+
+    const title = document.createElement("div");
+    title.className = "site-name";
+    title.textContent = "> " + name;
+
+    const sub = document.createElement("div");
+    sub.className = "site-cat";
+    sub.textContent = category.toUpperCase();
+
+    link.append(title,sub);
+    host.appendChild(link);
+  });
 }
 
-function openSite(key) {
-  const site = sites[key];
-  if (!site) return;
-
-  const tab = window.open(site.url,"_blank","noopener");
-
-  addLog("[HAL] Открываю " + site.name + ".");
-  beep(780,80);
-
-  if (!tab) {
-    addLog("[SYSTEM] Браузер мог заблокировать новую вкладку. Разрешите всплывающие окна для сайта HAL.");
-  }
+function openEntry(entry) {
+  window.open(entry[2], "_blank", "noopener,noreferrer");
+  addLog("[HAL] ОТКРЫВАЮ: " + entry[1], true);
 }
 
 function handleCommand(raw) {
-  const command = raw.trim().toLowerCase();
+  const command = raw.trim();
   if (!command) return;
 
-  addLog("[YOU] " + raw.trim());
+  addLog("[YOU] " + command, true);
 
-  if (/(привет|здравствуй|добрый день|доброе утро|добрый вечер)/i.test(command)) {
-    const answer = "Привет. Я на связи. Чем займёмся?";
-    addLog("[HAL] " + answer);
-    speak(answer);
-    beep(600,100);
+  const lower = command.toLocaleLowerCase("ru");
+
+  if (/^(помощь|help|что умеешь|список команд)$/.test(lower)) {
+    addLog("[HAL] КОМАНДЫ: «открой YouTube», «открой Telegram», «найди Steam». Можно также выбрать сайт в каталоге.");
     return;
   }
 
-  if (/(помощь|что умеешь|список команд)/i.test(command)) {
-    const answer = "Пока я умею открывать YouTube, ВК, Яндекс Музыку и Кинопоиск. Также могу поздороваться.";
-    addLog("[HAL] " + answer);
-    speak(answer);
+  if (/^(привет|здравствуй|привет hal|привет хал)$/.test(lower)) {
+    addLog("[HAL] СИСТЕМА НА СВЯЗИ. ЖДУ КОМАНДУ.", true);
     return;
   }
 
-  for (const [key,site] of Object.entries(sites)) {
-    if (site.words.some(word => command.includes(word))) {
-      openSite(key);
-      speak("Открываю " + site.name);
+  const cleaned = lower.replace(
+    /^(пожалуйста\s+)?(открой|открыть|запусти|запустить|перейди на|зайди на|найди|найти)\s+/,
+    ""
+  ).trim();
+
+  const match = catalog.find(([category,name]) =>
+    name.toLocaleLowerCase("ru") === cleaned ||
+    name.toLocaleLowerCase("ru").includes(cleaned) ||
+    cleaned.includes(name.toLocaleLowerCase("ru"))
+  );
+
+  if (match) {
+    openEntry(match);
+    return;
+  }
+
+  if (cleaned) {
+    const found = catalog.filter(([category,name]) =>
+      (name+" "+category).toLocaleLowerCase("ru").includes(cleaned)
+    );
+
+    if (found.length === 1) {
+      openEntry(found[0]);
+      return;
+    }
+
+    if (found.length > 1) {
+      activeCategory = "ВСЕ";
+      renderCategories();
+      renderSites(cleaned);
+      addLog("[HAL] НАЙДЕНО СОВПАДЕНИЙ: " + found.length + ". ВЫБЕРИ НУЖНЫЙ САЙТ.");
       return;
     }
   }
 
-  const answer = "Пока не знаю эту команду. Скажи помощь, чтобы узнать, что я умею.";
-  addLog("[HAL] " + answer);
-  speak(answer);
+  addLog("[HAL] КОМАНДА НЕ РАСПОЗНАНА. НАПИШИ «ПОМОЩЬ».");
 }
 
-document.querySelectorAll(".service").forEach(button => {
-  button.addEventListener("click",() => {
-    openSite(button.dataset.site);
-  });
-});
-
-form.addEventListener("submit",event => {
+$("commandForm").addEventListener("submit", event => {
   event.preventDefault();
-  const value = input.value;
-  if (!value.trim()) return;
-
-  handleCommand(value);
+  handleCommand(input.value);
   input.value = "";
 });
 
-mic.addEventListener("click",async () => {
-  const Recognition =
+function stopListening() {
+  listening = false;
+  mic.disabled = false;
+  mic.classList.remove("listening");
+  micStatus.textContent = "ОЖИДАНИЕ";
+
+  if (hint.textContent === "СЛУШАЮ...") {
+    hint.textContent = "НАЖМИ НА КНОПКУ И ПРОИЗНЕСИ КОМАНДУ";
+  }
+}
+
+mic.addEventListener("click", async () => {
+  const SpeechRecognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
-  if (!Recognition) {
-    hint.textContent = "РАСПОЗНАВАНИЕ НЕ ПОДДЕРЖИВАЕТСЯ";
-    addLog("[ERROR] Используй Chrome или Edge для голосового ввода.");
+  if (!SpeechRecognition) {
+    hint.textContent = "НЕТ ПОДДЕРЖКИ РАСПОЗНАВАНИЯ";
+    addLog("[ERROR] ОТКРОЙ САЙТ В CHROME ИЛИ EDGE.");
+    return;
+  }
+
+  if (listening && recognition) {
+    recognition.stop();
     return;
   }
 
   try {
+    if (!navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia) {
+      throw new Error("MIC_PERMISSION");
+    }
+
     const stream =
       await navigator.mediaDevices.getUserMedia({audio:true});
 
     stream.getTracks().forEach(track => track.stop());
 
-    const recognition = new Recognition();
+    recognition = new SpeechRecognition();
     recognition.lang = "ru-RU";
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
+    recognition.continuous = false;
 
-    mic.disabled = true;
-    mic.classList.add("listening");
-    hint.textContent = "СЛУШАЮ...";
-    addLog("[HAL] Слушаю команду...");
-    beep(520,70);
+    recognition.onstart = () => {
+      listening = true;
+      mic.classList.add("listening");
+      micStatus.textContent = "СЛУШАЮ";
+      hint.textContent = "СЛУШАЮ...";
+      addLog("[HAL] МИКРОФОН АКТИВЕН. ГОВОРИ КОМАНДУ.", true);
+    };
 
     recognition.onresult = event => {
-      const command = event.results[0][0].transcript;
-      hint.textContent = "КОМАНДА ПРИНЯТА";
-      handleCommand(command);
-    };
+      let transcript = "";
 
-    recognition.onerror = event => {
-      addLog("[ERROR] Распознавание: " + event.error);
-      hint.textContent = "ОШИБКА РАСПОЗНАВАНИЯ";
-    };
+      for (let i=event.resultIndex; i<event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
 
-    recognition.onend = () => {
-      mic.disabled = false;
-      mic.classList.remove("listening");
+      hint.textContent = transcript
+        ? "РАСПОЗНАНО: " + transcript
+        : "СЛУШАЮ...";
 
-      if (hint.textContent === "СЛУШАЮ...") {
-        hint.textContent = "НАЖМИ ДЛЯ ГОЛОСОВОЙ КОМАНДЫ";
+      if (event.results[event.results.length-1].isFinal) {
+        input.value = transcript.trim();
+        handleCommand(transcript);
       }
     };
 
+    recognition.onerror = event => {
+      addLog("[ERROR] РАСПОЗНАВАНИЕ: " + event.error);
+      hint.textContent = "ОШИБКА РАСПОЗНАВАНИЯ";
+    };
+
+    recognition.onend = stopListening;
     recognition.start();
 
   } catch(error) {
-    addLog("[ERROR] " + error.name + ": нет доступа к микрофону.");
-    hint.textContent = "НЕТ ДОСТУПА К МИКРОФОНУ";
-    mic.disabled = false;
-    mic.classList.remove("listening");
+    stopListening();
+
+    if (error.name === "NotAllowedError" ||
+        error.message === "MIC_PERMISSION") {
+      hint.textContent = "НЕТ ДОСТУПА К МИКРОФОНУ";
+      addLog("[ERROR] РАЗРЕШИ БРАУЗЕРУ ИСПОЛЬЗОВАТЬ МИКРОФОН.");
+    } else {
+      hint.textContent = "НЕ УДАЛОСЬ ЗАПУСТИТЬ МИКРОФОН";
+      addLog("[ERROR] " + error.message);
+    }
   }
 });
+
+renderCategories();
+renderSites();
+
+addLog("[SYSTEM] N.HAL v2.0 ЗАГРУЖЕН.", true);
+addLog("[SYSTEM] ГОЛОСОВОЙ ВВОД ВКЛЮЧЁН. ОЗВУЧКА ОТВЕТОВ ОТКЛЮЧЕНА.");
+addLog("[SYSTEM] ДОСТУПНО САЙТОВ: " + catalog.length + ". НАПИШИ «ПОМОЩЬ».");
 </script>
 </body>
 </html>
