@@ -1,1 +1,208 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIKITA HAL</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #0b0e13;
+  color: #e8edf5;
+  font-family: Consolas, monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  width: min(92%, 520px);
+  padding: 28px;
+  background: #111720;
+  border: 1px solid #263344;
+  border-radius: 18px;
+  box-shadow: 0 20px 80px #0008;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #293342;
+  padding-bottom: 18px;
+}
+
+.status {
+  color: #65d69a;
+  font-size: 12px;
+}
+
+.version {
+  color: #687587;
+  font-size: 11px;
+}
+
+.main {
+  text-align: center;
+  padding: 55px 0 35px;
+}
+
+.logo {
+  font-size: 54px;
+  color: #8bb5ff;
+  letter-spacing: 8px;
+  text-shadow: 0 0 30px #467dcc55;
+}
+
+.subtitle {
+  color: #8290a3;
+  font-size: 11px;
+  letter-spacing: 3px;
+  margin-top: 12px;
+}
+
+.mic {
+  margin-top: 35px;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 1px solid #42618c;
+  background: #1a2b43;
+  color: #a9c9ff;
+  font-size: 30px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.mic:hover {
+  background: #263f60;
+  box-shadow: 0 0 30px #568bd955;
+}
+
+.mic:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+.hint {
+  color: #718096;
+  font-size: 11px;
+  margin-top: 18px;
+}
+
+.panel {
+  background: #0b1018;
+  border: 1px solid #263344;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.panel-title {
+  color: #8290a3;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+#log {
+  color: #65d69a;
+  font-size: 12px;
+  min-height: 42px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.footer {
+  color: #526174;
+  text-align: center;
+  font-size: 10px;
+  margin-top: 22px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="status">● SYSTEM ONLINE</div>
+    <div class="version">NIKITA HAL / v1.0</div>
+  </div>
+
+  <div class="main">
+    <div class="logo">HAL</div>
+    <div class="subtitle">ГОЛОСОВОЙ ИНТЕРФЕЙС</div>
+    <button class="mic" id="mic">⌁</button>
+    <div class="hint" id="hint">НАЖМИ ДЛЯ НАЧАЛА</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">SYSTEM LOG</div>
+    <div id="log">[SYSTEM] Интерфейс загружен.
+[HAL] Ожидаю подключения...</div>
+  </div>
+
+  <div class="footer">PRIVATE LOCAL INTERFACE · NIKITA</div>
+</div>
+
+<script>
+const mic = document.getElementById("mic");
+const hint = document.getElementById("hint");
+const log = document.getElementById("log");
+
+mic.addEventListener("click", async () => {
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+    hint.textContent = "РАСПОЗНАВАНИЕ НЕ ПОДДЕРЖИВАЕТСЯ";
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true
+    });
+
+    stream.getTracks().forEach(track => track.stop());
+
+    const recognition = new Recognition();
+    recognition.lang = "ru-RU";
+    recognition.interimResults = false;
+
+    mic.disabled = true;
+    hint.textContent = "СЛУШАЮ...";
+    log.textContent = "[HAL] Микрофон доступен.\n[HAL] Слушаю команду...";
+
+    recognition.onresult = event => {
+      const command = event.results[0][0].transcript;
+      log.textContent = "[YOU] " + command;
+      hint.textContent = "КОМАНДА ПРИНЯТА";
+    };
+
+    recognition.onerror = event => {
+      log.textContent = "[ERROR] " + event.error;
+      hint.textContent = "ОШИБКА РАСПОЗНАВАНИЯ";
+    };
+
+    recognition.onend = () => {
+      mic.disabled = false;
+      if (hint.textContent === "СЛУШАЮ...") {
+        hint.textContent = "НАЖМИ ДЛЯ НАЧАЛА";
+      }
+    };
+
+    recognition.start();
+
+  } catch (error) {
+    log.textContent = "[ERROR] " + error.name;
+    hint.textContent = "НЕТ ДОСТУПА К МИКРОФОНУ";
+    mic.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
+
